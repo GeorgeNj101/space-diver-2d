@@ -1,6 +1,5 @@
 class Player {
 	constructor(game) {
-		this.radius = 20;
 		this.game = game;
 
 		this.x = game.width / 2;
@@ -8,6 +7,20 @@ class Player {
 
 		this.speedX = 0;
 		this.maxSpeed = 250;
+
+		// Visual sprite scaling
+		this.scaleX = 0.15;
+		this.scaleY = 0.08;
+
+		// Compute actual hitbox from sprite dimensions (updated once image loads)
+		const img = ASSET_MANAGER.getAsset("./assets/space_diver_1.png");
+		if (img) {
+			this.hitW = img.width * this.scaleX * 0.6;  // shrink for forgiving feel
+			this.hitH = img.height * this.scaleY * 0.6;
+		} else {
+			this.hitW = 20;
+			this.hitH = 20;
+		}
 	}
 
 	update(dt) {
@@ -22,25 +35,22 @@ class Player {
 
 		this.x += this.speedX * dt;
 
-		// keep player inside screen
-		if (this.x - this.radius < 0) this.x = this.radius;
-		if (this.x + this.radius > this.game.width)
-			this.x = this.game.width - this.radius;
+		// keep player inside screen using half hitbox width
+		const halfW = this.hitW / 2;
+		if (this.x - halfW < 0) this.x = halfW;
+		if (this.x + halfW > this.game.width)
+			this.x = this.game.width - halfW;
 	}
 
 	draw(ctx) {
 		const img = ASSET_MANAGER.getAsset("./assets/space_diver_1.png");
-		if (!img) return; // safety: image not loaded
+		if (!img) return;
 
-		// Non-uniform scaling: keep a decent width but squash the height
-		// so the diver doesn't look so tall on screen.
-		const scaleX = 0.15; // horizontal scale
-		const scaleY = 0.08; // vertical scale (smaller to reduce length)
-		const drawW = img.width * scaleX;
-		const drawH = img.height * scaleY;
+		const drawW = img.width * this.scaleX;
+		const drawH = img.height * this.scaleY;
 		const halfW = drawW / 2;
 		const halfH = drawH / 2;
-		// draw so that (this.x, this.y) is roughly the center of the diver sprite
+		// draw so that (this.x, this.y) is the center of the diver sprite
 		ctx.drawImage(img, this.x - halfW, this.y - halfH, drawW, drawH);
 	}
 }

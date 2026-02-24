@@ -7,6 +7,8 @@ const gameEngine = new GameEngine(GAME_WIDTH, GAME_HEIGHT);
 
 
 ASSET_MANAGER.queueDownload("./assets/space_diver_1.png");
+ASSET_MANAGER.queueDownload("./assets/world.png");
+ASSET_MANAGER.queueDownload("./assets/cloud.png");
 
 ASSET_MANAGER.downloadAll(() => {
 	const canvas = document.getElementById("gameWorld");
